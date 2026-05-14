@@ -1,11 +1,11 @@
 {
-  "name": "Librarr Mobile",
+  "name": "Librarr Mobile Static",
   "short_name": "Librarr",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b1120",
   "theme_color": "#0b1120",
-  "description": "Mobile static web build of Librarr UI",
+  "description": "Mobile static build of Librarr with local browser storage.",
   "icons": [
     {
       "src": "icon.svg",

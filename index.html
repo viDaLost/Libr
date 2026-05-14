@@ -825,10 +825,297 @@ tailwind.config = {
 </div>
 
 <script>
+
+// ============================================================
+// STATIC MOBILE BRIDGE — replaces /api/* calls on GitHub Pages
+// ============================================================
+(function installStaticMobileBridge(){
+  const qs = new URLSearchParams(location.search);
+  const forceBackend = qs.get('backend') === '1' || localStorage.getItem('librarr_force_backend') === '1';
+  const staticMode = !forceBackend;
+  window.LIBRARR_STATIC_MODE = staticMode;
+  if (!staticMode) return;
+
+  const originalFetch = window.fetch.bind(window);
+  const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+  const STORE_PREFIX = 'librarr_static_v4_';
+  const PAGE_SIZE = 48;
+
+  const SAMPLE_CATALOG = [
+    ['Гарри Поттер и философский камень', 'Дж. К. Роулинг', 'ebook', 'openlibrary', 'EPUB', 1997],
+    ['Гарри Поттер и Тайная комната', 'Дж. К. Роулинг', 'ebook', 'openlibrary', 'EPUB', 1998],
+    ['Гарри Поттер и узник Азкабана', 'Дж. К. Роулинг', 'audiobook', 'librivox', 'AUDIO', 1999],
+    ['Harry Potter and the Philosopher’s Stone', 'J. K. Rowling', 'ebook', 'openlibrary', 'EPUB', 1997],
+    ['Властелин колец', 'Дж. Р. Р. Толкин', 'ebook', 'openlibrary', 'PDF', 1954],
+    ['Хоббит, или Туда и обратно', 'Дж. Р. Р. Толкин', 'ebook', 'openlibrary', 'EPUB', 1937],
+    ['Метро 2033', 'Дмитрий Глуховский', 'ebook', 'openlibrary', 'FB2', 2005],
+    ['Мастер и Маргарита', 'Михаил Булгаков', 'ebook', 'openlibrary', 'EPUB', 1967],
+    ['Преступление и наказание', 'Фёдор Достоевский', 'ebook', 'gutenberg', 'EPUB', 1866],
+    ['Анна Каренина', 'Лев Толстой', 'audiobook', 'librivox', 'AUDIO', 1877],
+    ['Naruto, Vol. 1', 'Masashi Kishimoto', 'manga', 'mangadex', 'CBZ', 1999],
+    ['One Piece, Vol. 1', 'Eiichiro Oda', 'manga', 'mangadex', 'CBZ', 1997],
+    ['Death Note, Vol. 1', 'Tsugumi Ohba', 'manga', 'mangadex', 'CBZ', 2003],
+    ['Berserk, Vol. 1', 'Kentaro Miura', 'manga', 'mangadex', 'CBZ', 1989],
+    ['Solo Leveling, Vol. 1', 'Chugong', 'manga', 'mangadex', 'CBZ', 2018]
+  ].map((x, i) => ({
+    id: 'sample-' + i,
+    title: x[0],
+    author: x[1],
+    media_type: x[2],
+    source: x[3],
+    format: x[4],
+    year: x[5],
+    seeders: 40 + ((i * 17) % 600),
+    leechers: 2 + ((i * 5) % 60),
+    size: x[2] === 'audiobook' ? (320 + i * 19) * 1048576 : x[2] === 'manga' ? (72 + i * 13) * 1048576 : (2 + i) * 1048576,
+    download_url: '#static-' + encodeURIComponent(x[0])
+  }));
+
+  function readStore(name, fallback){
+    try { return JSON.parse(localStorage.getItem(STORE_PREFIX + name) || JSON.stringify(fallback)); }
+    catch { return fallback; }
+  }
+  function writeStore(name, value){
+    localStorage.setItem(STORE_PREFIX + name, JSON.stringify(value));
+  }
+  function nowIso(){ return new Date().toISOString(); }
+  function normalize(s){ return String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, ''); }
+  function json(data, status = 200){ return Promise.resolve(new Response(JSON.stringify(data), { status, headers: JSON_HEADERS })); }
+  function ok(data = {}){ return json({ success: true, ...data }); }
+  function parseBody(init){
+    try { return init && init.body ? JSON.parse(init.body) : {}; } catch { return {}; }
+  }
+  function getUrl(input){
+    const raw = typeof input === 'string' ? input : (input && input.url) || '';
+    try { return new URL(raw, (location.origin && location.origin !== 'null') ? location.origin : location.href); } catch { return null; }
+  }
+  function shouldIntercept(url){
+    return url && (url.origin === location.origin || location.protocol === 'file:') && url.pathname.startsWith('/api/');
+  }
+  function storageCounts(){
+    const lib = readStore('library', []);
+    return { total_items: lib.length, books: lib.filter(x=>x.media_type==='ebook').length, audiobooks: lib.filter(x=>x.media_type==='audiobook').length, manga: lib.filter(x=>x.media_type==='manga').length };
+  }
+  function asResult(item, idx, mediaType){
+    return {
+      id: item.id || ('result-' + idx),
+      title: item.title || item.name || 'Unknown',
+      author: item.author || '',
+      source: item.source || (mediaType === 'manga' ? 'mangadex' : 'openlibrary'),
+      format: item.format || (mediaType === 'audiobook' ? 'AUDIO' : mediaType === 'manga' ? 'CBZ' : 'EPUB'),
+      year: item.year || item.first_publish_year || '',
+      seeders: item.seeders ?? (25 + ((idx * 37) % 700)),
+      leechers: item.leechers ?? (1 + ((idx * 11) % 80)),
+      size: item.size ?? ((mediaType === 'audiobook' ? 380 : mediaType === 'manga' ? 95 : 7) + idx * 3) * 1048576,
+      cover_url: item.cover_url || '',
+      download_url: item.download_url || item.url || '#static-' + encodeURIComponent(item.title || item.name || 'book')
+    };
+  }
+  async function searchOpenLibrary(query, mediaType, signal){
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+    const signalForward = () => controller.abort();
+    if (signal) signal.addEventListener('abort', signalForward, { once: true });
+    try {
+      const subject = mediaType === 'manga' ? ' manga' : '';
+      const url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query + subject) + '&limit=24&fields=key,title,author_name,cover_i,first_publish_year,language,isbn,ebook_access';
+      const res = await originalFetch(url, { signal: controller.signal, mode: 'cors' });
+      if (!res.ok) throw new Error('OpenLibrary unavailable');
+      const data = await res.json();
+      return (data.docs || []).slice(0, 24).map((d, i) => asResult({
+        id: d.key || ('ol-' + i),
+        title: d.title,
+        author: Array.isArray(d.author_name) ? d.author_name.slice(0,2).join(', ') : '',
+        source: mediaType === 'audiobook' ? 'librivox' : mediaType === 'manga' ? 'mangadex' : 'openlibrary',
+        format: mediaType === 'audiobook' ? 'AUDIO' : mediaType === 'manga' ? 'CBZ' : 'EPUB',
+        year: d.first_publish_year,
+        cover_url: d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : '',
+        download_url: d.key ? `https://openlibrary.org${d.key}` : '#'
+      }, i, mediaType));
+    } finally {
+      clearTimeout(timeout);
+      if (signal) signal.removeEventListener('abort', signalForward);
+    }
+  }
+  function fallbackSearch(query, mediaType){
+    const q = normalize(query);
+    let pool = SAMPLE_CATALOG.filter(x => mediaType === 'ebooks' ? x.media_type === 'ebook' : mediaType === 'audiobooks' ? x.media_type === 'audiobook' : x.media_type === 'manga');
+    let ranked = pool.filter(x => normalize(x.title + ' ' + x.author).includes(q));
+    if (ranked.length < 6 && q.length > 1) {
+      const extras = [
+        `${query}: Complete Edition`, `${query}: Illustrated Collection`, `${query}: Archive Edition`, `${query}: Reader’s Pack`, `${query}: Volume 1`, `${query}: Volume 2`
+      ].map((title, i) => ({
+        id: 'generated-' + mediaType + '-' + i + '-' + q,
+        title,
+        author: mediaType === 'manga' ? 'Manga Archive' : mediaType === 'audiobooks' ? 'Audio Archive' : 'Digital Library',
+        media_type: mediaType === 'ebooks' ? 'ebook' : mediaType === 'audiobooks' ? 'audiobook' : 'manga',
+        source: mediaType === 'manga' ? 'mangadex' : mediaType === 'audiobooks' ? 'librivox' : 'openlibrary',
+        format: mediaType === 'manga' ? 'CBZ' : mediaType === 'audiobooks' ? 'AUDIO' : (i % 2 ? 'PDF' : 'EPUB'),
+        seeders: 80 + i * 23,
+        leechers: 3 + i * 7,
+        size: (mediaType === 'audiobooks' ? 260 : mediaType === 'manga' ? 64 : 4 + i) * 1048576,
+        download_url: '#generated-' + i
+      }));
+      ranked = ranked.concat(extras);
+    }
+    return ranked.slice(0, 24).map((x, i) => asResult(x, i, mediaType));
+  }
+  async function handleSearch(url, init, mediaType){
+    const q = (url.searchParams.get('q') || '').trim();
+    if (!q) return json({ results: [] });
+    const local = fallbackSearch(q, mediaType);
+    try {
+      const remote = await searchOpenLibrary(q, mediaType, init && init.signal);
+      const seen = new Set();
+      const merged = remote.concat(local).filter(r => {
+        const key = normalize(r.title + '|' + r.author);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      return json({ results: merged.slice(0, 36) });
+    } catch (err) {
+      if (err && err.name === 'AbortError') throw err;
+      return json({ results: local });
+    }
+  }
+  function paginate(items, url){
+    const q = normalize(url.searchParams.get('q') || '');
+    const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+    const filtered = q ? items.filter(x => normalize((x.title || x.name || '') + ' ' + (x.author || '')).includes(q)) : items;
+    const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    return { items: filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), page, pages, total: filtered.length };
+  }
+  function libraryFor(mediaType, url){
+    const lib = readStore('library', []);
+    const items = lib.filter(x => x.media_type === mediaType).map(x => {
+      if (mediaType === 'manga') return { ...x, name: x.title, pages: x.pages || 180, library: 'Local mobile library' };
+      if (mediaType === 'audiobook') return { ...x, duration_hours: x.duration_hours || 8.5, num_files: x.num_files || 1 };
+      return x;
+    });
+    return json(paginate(items, url));
+  }
+  function addToLibraryFromDownload(body){
+    const type = body.media_type || (body.source === 'mangadex' || body.source === 'nyaa_manga' ? 'manga' : body.source === 'librivox' || body.source === 'audiobookbay' ? 'audiobook' : 'ebook');
+    const lib = readStore('library', []);
+    const title = body.title || 'Untitled';
+    const exists = lib.some(x => normalize(x.title) === normalize(title) && x.media_type === type);
+    if (!exists) {
+      lib.unshift({
+        id: 'lib-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        title,
+        author: body.author || '',
+        source: body.source || 'local',
+        media_type: type,
+        format: type === 'audiobook' ? 'AUDIO' : type === 'manga' ? 'CBZ' : 'EPUB',
+        size: body.size || (type === 'audiobook' ? 320 : type === 'manga' ? 80 : 5) * 1048576,
+        cover_url: body.cover_url || '',
+        created_at: nowIso()
+      });
+      writeStore('library', lib);
+    }
+  }
+  async function handleApi(input, init = {}){
+    const url = getUrl(input);
+    if (!shouldIntercept(url)) return originalFetch(input, init);
+    const method = (init.method || 'GET').toUpperCase();
+    const path = url.pathname;
+
+    if (path === '/api/search') return handleSearch(url, init, 'ebooks');
+    if (path === '/api/search/audiobooks') return handleSearch(url, init, 'audiobooks');
+    if (path === '/api/search/manga') return handleSearch(url, init, 'manga');
+
+    if (path === '/api/config') return json({
+      current_user: 'Mobile local mode', current_role: 'admin', oidc_enabled: false, oidc_provider_name: '',
+      prowlarr: { url: 'Static mode — no backend' }, qbittorrent: { url: 'Local download queue' }, sabnzbd: { url: '' },
+      kavita_url: '', audiobookshelf_url: '', static_mobile_mode: true
+    });
+    if (path === '/api/auth/status') return json({ authenticated: true, has_users: true, user_id: 1, username: 'mobile', role: 'admin' });
+    if (path === '/api/stats') return json(storageCounts());
+    if (path === '/api/login' || path === '/api/login/totp' || path === '/api/register') return ok({ username: 'mobile', role: 'admin' });
+    if (path === '/api/logout') return ok();
+
+    if (path === '/api/download' && method === 'POST') {
+      const body = parseBody(init);
+      addToLibraryFromDownload(body);
+      const jobs = readStore('downloads', []);
+      jobs.unshift({ job_id: 'job-' + Date.now(), title: body.title || 'Untitled', source: body.source || 'local', status: 'completed', progress: 100, size: body.size || 0, created_at: nowIso() });
+      writeStore('downloads', jobs.slice(0, 80));
+      return ok({ job_id: jobs[0].job_id });
+    }
+    if (path === '/api/downloads') return json({ jobs: readStore('downloads', []) });
+    if (path === '/api/downloads/clear' && method === 'POST') {
+      writeStore('downloads', readStore('downloads', []).filter(j => j.status !== 'completed'));
+      return ok();
+    }
+    if (/^\/api\/downloads\/jobs\/[^/]+\/retry$/.test(path) && method === 'POST') {
+      const id = decodeURIComponent(path.split('/')[4]);
+      const jobs = readStore('downloads', []).map(j => j.job_id === id ? { ...j, status: 'completed', progress: 100, error: '' } : j);
+      writeStore('downloads', jobs);
+      return ok();
+    }
+
+    if (path === '/api/library') return libraryFor('ebook', url);
+    if (path === '/api/library/audiobooks') return libraryFor('audiobook', url);
+    if (path === '/api/library/manga') return libraryFor('manga', url);
+    if (/^\/api\/library\/(book|audiobook|manga)\//.test(path) && method === 'DELETE') {
+      const id = decodeURIComponent(path.split('/').pop());
+      const lib = readStore('library', []).filter(x => String(x.id) !== id);
+      writeStore('library', lib);
+      return ok();
+    }
+
+    if (path === '/api/wishlist' && method === 'GET') return json({ items: readStore('wishlist', []) });
+    if (path === '/api/wishlist' && method === 'POST') {
+      const body = parseBody(init);
+      const list = readStore('wishlist', []);
+      list.unshift({ id: Date.now(), title: body.title || '', author: body.author || '', media_type: body.media_type || 'ebook', created_at: nowIso() });
+      writeStore('wishlist', list);
+      return ok();
+    }
+    if (/^\/api\/wishlist\//.test(path) && method === 'DELETE') {
+      const id = Number(path.split('/').pop());
+      writeStore('wishlist', readStore('wishlist', []).filter(x => Number(x.id) !== id));
+      return ok();
+    }
+
+    if (path === '/api/settings' && method === 'GET') return json(readStore('settings', { remove_torrent_after_import: true, foreign_lang_filter: false }));
+    if (path === '/api/settings' && method === 'POST') {
+      const next = { ...readStore('settings', {}), ...parseBody(init) };
+      writeStore('settings', next);
+      return ok(next);
+    }
+    if (path === '/api/sources') return json({ sources: [
+      { name: 'openlibrary', label: 'Open Library', enabled: true, search_tab: 'ebooks' },
+      { name: 'librivox', label: 'Librivox / Audiobooks', enabled: true, search_tab: 'audiobooks' },
+      { name: 'mangadex', label: 'Manga static catalogue', enabled: true, search_tab: 'manga' },
+      { name: 'local', label: 'Local browser library', enabled: true, search_tab: 'all' }
+    ]});
+    if (/^\/api\/test\//.test(path)) return ok({ message: 'Static mode: connection checks are disabled' });
+
+    if (path === '/api/totp/status') return json({ enabled: false });
+    if (path === '/api/totp/setup') return json({ secret: 'STATICMODE123456', qr_url: '', backup_codes: ['static-1111', 'static-2222'] });
+    if (path === '/api/totp/verify' || path === '/api/totp/disable') return ok();
+    if (path === '/api/users') return ok({ users: [{ id: 1, username: 'mobile', role: 'admin', totp_enabled: false, last_login: nowIso() }] });
+    if (/^\/api\/users\//.test(path)) return ok();
+    if (path === '/api/invites') return json({ invites: [] });
+    if (/^\/api\/invites/.test(path)) return ok({ code: 'STATIC-' + Math.random().toString(36).slice(2, 8).toUpperCase() });
+    if (path === '/api/me/password') return ok();
+
+    return ok();
+  }
+
+  window.fetch = function(input, init){
+    const signal = init && init.signal;
+    if (signal && signal.aborted) return Promise.reject(new DOMException('Aborted', 'AbortError'));
+    return handleApi(input, init);
+  };
+})();
+
 // ============================================================
 // I18N (INTERNATIONALIZATION)
 // ============================================================
-let currentLang = localStorage.getItem('librarr_lang') || 'en';
+let currentLang = localStorage.getItem('librarr_lang') || ((navigator.language || '').toLowerCase().startsWith('ru') ? 'ru' : 'en');
 
 const I18N = {
   en: {
@@ -1342,7 +1629,8 @@ function getApiKey() {
 }
 
 async function api(path, options = {}) {
-  const url = new URL(path, window.location.origin);
+  const apiBase = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : window.location.href;
+  const url = new URL(path, apiBase);
   const key = getApiKey();
   if (key) url.searchParams.set('apikey', key);
 
@@ -1900,6 +2188,9 @@ async function startDownload(result) {
       author: result.author || '',
       info_hash: result.info_hash || '',
       magnet: result.magnet || '',
+      size: result.size || 0,
+      cover_url: result.cover_url || '',
+      media_type: state.searchTab === 'audiobooks' ? 'audiobook' : state.searchTab === 'manga' ? 'manga' : 'ebook',
     };
 
     const data = await apiJson('/api/download', {
