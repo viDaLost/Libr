@@ -1,0 +1,19 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="a" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(180 90) rotate(35) scale(700 500)"><stop stop-color="#20F2D2"/><stop offset="1" stop-color="#07111F"/></radialGradient>
+    <radialGradient id="b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1050 560) rotate(180) scale(700 500)"><stop stop-color="#FF9B54"/><stop offset="1" stop-color="#07111F" stop-opacity="0"/></radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="1200" height="630" fill="#07111F"/>
+  <rect width="1200" height="630" fill="url(#a)" opacity=".55"/>
+  <rect width="1200" height="630" fill="url(#b)" opacity=".7"/>
+  <circle cx="255" cy="150" r="130" fill="#89FFF2" opacity=".32" filter="url(#blur)"/>
+  <circle cx="940" cy="490" r="160" fill="#FFB36F" opacity=".28" filter="url(#blur)"/>
+  <rect x="88" y="75" width="1024" height="480" rx="46" fill="white" opacity=".11" stroke="white" stroke-opacity=".22"/>
+  <path d="M790 420C845 300 900 220 958 220s96 80 155 200" stroke="white" stroke-width="20" stroke-linecap="round" opacity=".72"/>
+  <path d="M830 420c34-49 68-77 106-77 42 0 76 28 114 77" stroke="#B9FFF4" stroke-width="16" stroke-linecap="round" opacity=".85"/>
+  <text x="132" y="180" fill="#B9FFF4" font-size="32" font-family="Inter, Arial" letter-spacing="7">KMW GLASS GUIDE</text>
+  <text x="132" y="286" fill="white" font-size="84" font-weight="800" font-family="Inter, Arial">Кавказские</text>
+  <text x="132" y="376" fill="white" font-size="84" font-weight="800" font-family="Inter, Arial">Минеральные Воды</text>
+  <text x="132" y="450" fill="#D6F7FF" font-size="30" font-family="Inter, Arial">Города, терренкуры, источники и маршруты в одном премиальном UI</text>
+</svg>
