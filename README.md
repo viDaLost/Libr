@@ -1,31 +1,30 @@
-# КМВ Гид — мобильный сайт по Кавказским Минеральным Водам
+# KMW Glass Guide
 
-Готовый статический сайт: откройте `index.html` в браузере или загрузите папку на GitHub Pages / Netlify / Vercel.
+Готовый статический сайт-гид по Кавказским Минеральным Водам.
 
 ## Что внутри
 
 - `index.html` — структура сайта и SEO-мета.
-- `styles.css` — дизайн-система, адаптив, анимации, тёмная тема.
-- `app.js` — интерактивные города, маршруты, подбор, избранное, модальные карточки.
-- `manifest.webmanifest` и `sw.js` — базовая PWA-поддержка при размещении на сервере.
-- `DESIGN_NOTES.md` — какие UX-механики из репозитория применены.
+- `styles.css` — премиальный glassmorphism UI, bento-layout, адаптив, анимации и reduced-motion fallback.
+- `app.js` — интерактивные города, схема региона, фильтры мест, сборщик маршрута, копирование плана и ссылки на Яндекс.Карты.
+- `assets/favicon.svg`, `assets/og-card.svg` — SVG-брендинг без тяжёлых картинок.
 
-## Основные функции
+## Паттерны из изученных репозиториев
 
-1. Городские вкладки: Пятигорск, Кисловодск, Ессентуки, Железноводск.
-2. Подбор маршрута по настроению: первый раз, вода, фото, семья, история, природа.
-3. Карточки маршрутов с сохранением в избранное через `localStorage`.
-4. Быстрые ссылки на Яндекс.Карты и Google Maps.
-5. Mobile-first навигация снизу и sticky header.
-6. Тёмная тема, видимый focus state, `prefers-reduced-motion`.
+- Glassmorphism: `backdrop-filter: blur(18px) saturate(170%)`, полупрозрачные слои, тонкие borders.
+- Liquid/spatial feel: фоновые gradient blobs, глубина, мягкий glow, layered cards.
+- Bento grid: модульные блоки настроений, маршрутов и подсказок.
+- Mobile-first UX: нижняя навигация, крупные touch targets, адаптивные сетки.
+- Animation system: 150–300ms micro-interactions, reveal on scroll, hover lift, parallax/tilt, `prefers-reduced-motion`.
+- Accessibility: skip-link, focus-visible, aria-labels, keyboard activation for map nodes.
 
-## Публикация на GitHub Pages
+## Запуск
+
+Откройте `index.html` в браузере или загрузите папку на GitHub Pages/Vercel/любой статический хостинг.
+
+## Быстрая публикация на GitHub Pages
 
 1. Создайте репозиторий.
-2. Загрузите содержимое этой папки в корень репозитория.
-3. В настройках GitHub Pages выберите ветку `main` и папку `/root`.
-4. Через несколько минут сайт будет доступен по ссылке GitHub Pages.
+2. Загрузите содержимое папки `kmv-glass-guide` в корень репозитория.
+3. Включите GitHub Pages: Settings → Pages → Deploy from branch → `main` / root.
 
-## Важное
-
-Сайт не даёт медицинских назначений по минеральной воде. Водный блок оформлен как туристическая навигация. Для лечебного приёма нужна рекомендация врача.

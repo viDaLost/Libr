@@ -3,241 +3,192 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#F5F0E7" />
-  <meta name="description" content="Мобильный гид по Кавказским Минеральным Водам: маршруты, города, источники, парки и быстрые кнопки навигации." />
-  <title>КМВ Гид — Кавказские Минеральные Воды</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#07111f" />
+  <title>KMW Glass Guide — гид по Кавказским Минеральным Водам</title>
+  <meta name="description" content="Премиальный интерактивный сайт-гид по Кавказским Минеральным Водам: города-курорты, маршруты, источники, терренкуры, карта и план поездки." />
+  <meta property="og:title" content="KMW Glass Guide" />
+  <meta property="og:description" content="Гид по Кавказским Минеральным Водам с glassmorphism UI, маршрутами и интерактивной картой." />
+  <meta property="og:image" content="assets/og-card.svg" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <a class="skip-link" href="#content">Перейти к содержанию</a>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <div class="ambient" aria-hidden="true">
+    <span class="blob blob-a"></span>
+    <span class="blob blob-b"></span>
+    <span class="blob blob-c"></span>
+    <span class="grid-light"></span>
+  </div>
 
-  <header class="site-header" data-elevated="false">
-    <a class="brand" href="#top" aria-label="КМВ Гид — на главную">
+  <header class="site-header" data-glass>
+    <a class="brand" href="#top" aria-label="KMW Glass Guide — наверх">
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 48 48" role="img"><path d="M8 31.8c5.4-2.7 8.8-8 13-16.2 1.4-2.8 4.7-3.4 7-.9 4.1 4.6 7.1 10.8 12 17.1 1.2 1.5.2 3.7-1.8 3.7H9.1c-2.2 0-3-2.7-1.1-3.7Z"/><path d="M17.1 29.2c2-2.3 3.2-5.2 5.7-10.1.5-1.1 1.8-1.4 2.7-.5 2 2.2 3.5 5 5.5 8.2.7 1.1-.1 2.4-1.4 2.4H17.1Z" opacity=".45"/><circle cx="34" cy="14" r="3.5" opacity=".65"/></svg>
+        <svg viewBox="0 0 64 64" role="img"><path d="M9 43c7-15 14-26 23-26s16 11 23 26"/><path d="M17 43c5-8 9-12 15-12s10 4 15 12"/><circle cx="32" cy="43" r="6"/></svg>
       </span>
-      <span>
-        <strong>КМВ Гид</strong>
-        <small>маршруты и источники</small>
-      </span>
+      <span class="brand-copy"><strong>KMW</strong><small>glass guide</small></span>
     </a>
-
-    <nav class="desktop-nav" aria-label="Главная навигация">
+    <nav class="desktop-nav" aria-label="Основная навигация">
       <a href="#cities">Города</a>
       <a href="#routes">Маршруты</a>
-      <a href="#planner">Подбор</a>
-      <a href="#tips">Советы</a>
+      <a href="#map">Карта</a>
+      <a href="#planner">Планер</a>
     </nav>
-
-    <button class="icon-button" id="themeToggle" type="button" aria-label="Переключить тему">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 4a1 1 0 0 1-1-1v-1.1a1 1 0 1 1 2 0V21a1 1 0 0 1-1 1Zm0-18a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm10 8a1 1 0 0 1-1 1h-1.1a1 1 0 1 1 0-2H21a1 1 0 0 1 1 1ZM4.1 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1.1a1 1 0 0 1 1 1Zm14.5 6.6a1 1 0 0 1-1.4 0l-.8-.8a1 1 0 1 1 1.4-1.4l.8.8a1 1 0 0 1 0 1.4ZM7.6 6.2a1 1 0 0 1-1.4 1.4l-.8-.8a1 1 0 0 1 1.4-1.4l.8.8Zm11-1.4a1 1 0 0 1 0 1.4l-.8.8a1 1 0 0 1-1.4-1.4l.8-.8a1 1 0 0 1 1.4 0ZM7.6 17.8l-.8.8a1 1 0 0 1-1.4-1.4l.8-.8a1 1 0 0 1 1.4 1.4Z"/></svg>
-    </button>
+    <button class="header-cta" type="button" data-scroll-to="planner">Собрать маршрут</button>
   </header>
 
-  <main id="content">
-    <section id="top" class="hero section-observe" aria-labelledby="hero-title">
-      <div class="hero-bg" aria-hidden="true">
-        <span class="orb orb-a"></span>
-        <span class="orb orb-b"></span>
-        <span class="route-line"></span>
-      </div>
-
-      <div class="hero-copy">
-        <span class="eyebrow">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c-2.6 0-5 2.1-5 5 0 3.8 4.2 8.5 5 9.4.8-.9 5-5.6 5-9.4 0-2.9-2.4-5-5-5Zm0 7.2A2.2 2.2 0 1 1 12 4.8a2.2 2.2 0 0 1 0 4.4Z"/><path d="M5 17.8c0-1.2 1.5-2.2 3.8-2.7.5.6.9 1.2 1.3 1.7-1.9.2-3.1.7-3.1 1 0 .5 2.1 1.2 5 1.2s5-.7 5-1.2c0-.3-1.2-.8-3.1-1 .4-.5.8-1.1 1.3-1.7 2.3.5 3.8 1.5 3.8 2.7 0 1.9-3.1 3.2-7 3.2s-7-1.3-7-3.2Z" opacity=".7"/></svg>
-          Кавказские Минеральные Воды
-        </span>
-        <h1 id="hero-title">Гид, который помогает выбрать маршрут, а не просто читает лекцию о курортах.</h1>
-        <p>Пятигорск, Кисловодск, Ессентуки и Железноводск собраны в один мобильный маршрутный сервис: что посмотреть, куда идти сначала, где пить воду и как открыть навигацию.</p>
+  <main id="main">
+    <section id="top" class="hero section-shell">
+      <div class="hero-copy reveal">
+        <div class="eyebrow"><span></span> интерактивный гид по курортному региону</div>
+        <h1>Кавказские Минеральные Воды — в формате живого маршрута</h1>
+        <p class="hero-lead">Выбирай город, настроение поездки и точки на карте. Сайт собирает маршрут, показывает ритм дня и открывает навигацию без лишней возни.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#planner">Подобрать маршрут</a>
-          <a class="button button-ghost" href="#cities">Смотреть города</a>
+          <button class="btn btn-primary magnetic" type="button" data-scroll-to="routes">Посмотреть маршруты</button>
+          <button class="btn btn-ghost magnetic" type="button" data-scroll-to="cities">Выбрать город</button>
+        </div>
+        <div class="trust-row" aria-label="Ключевые факты">
+          <div><strong>4</strong><span>главных города-курорта</span></div>
+          <div><strong>130+</strong><span>минеральных источников</span></div>
+          <div><strong>1–3 дня</strong><span>готовые сценарии</span></div>
         </div>
       </div>
 
-      <div class="hero-panel" aria-label="Краткая карта маршрутов КМВ">
-        <div class="map-card">
-          <div class="map-head">
-            <span>Живой маршрут</span>
-            <strong id="heroRouteName">Классика КМВ</strong>
+      <div class="hero-visual reveal delay-1" aria-label="Визуальная карта Кавказских Минеральных Вод">
+        <div class="phone-frame" data-tilt>
+          <div class="screen-glow"></div>
+          <div class="hero-map-card glass-panel">
+            <div class="map-topline"><span>Mineral Line</span><b>KMV</b></div>
+            <svg class="mini-map" viewBox="0 0 520 560" aria-hidden="true">
+              <defs>
+                <linearGradient id="routeGradient" x1="44" y1="433" x2="451" y2="111" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb66b"/><stop offset=".44" stop-color="#1de4c7"/><stop offset="1" stop-color="#7aa8ff"/></linearGradient>
+                <filter id="softGlow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <path class="mountain mountain-back" d="M18 485C86 306 145 198 220 235c56 27 72-119 139-111 69 9 108 196 143 361H18Z"/>
+              <path class="mountain mountain-front" d="M36 487c52-111 97-175 149-152 41 18 62-67 111-60 70 10 89 115 166 212H36Z"/>
+              <path class="route-line" d="M90 418C157 373 170 311 226 296c69-18 95 43 149 0 48-38 52-116 91-154"/>
+              <g class="map-node active" transform="translate(88 418)"><circle r="18"/><text x="29" y="6">Кисловодск</text></g>
+              <g class="map-node" transform="translate(223 296)"><circle r="18"/><text x="29" y="6">Ессентуки</text></g>
+              <g class="map-node" transform="translate(374 296)"><circle r="18"/><text x="29" y="6">Пятигорск</text></g>
+              <g class="map-node" transform="translate(465 142)"><circle r="18"/><text x="-145" y="7">Железноводск</text></g>
+            </svg>
+            <div class="floating-card card-one glass-panel"><span>Сегодня</span><b>терренкур + нарзан</b></div>
+            <div class="floating-card card-two glass-panel"><span>Вид</span><b>Эльбрус / Машук</b></div>
           </div>
-          <svg class="mini-map" viewBox="0 0 360 270" aria-hidden="true">
+        </div>
+      </div>
+    </section>
+
+    <section class="mood-strip section-shell reveal" aria-label="Быстрый выбор настроения поездки">
+      <button class="mood-card" type="button" data-route-template="health"><span>01</span><b>Оздоровление</b><small>источники, парки, спокойный темп</small></button>
+      <button class="mood-card" type="button" data-route-template="mountain"><span>02</span><b>Горы и виды</b><small>Машук, терренкуры, смотровые</small></button>
+      <button class="mood-card" type="button" data-route-template="heritage"><span>03</span><b>Архитектура</b><small>галереи, дворцы, исторические места</small></button>
+      <button class="mood-card" type="button" data-route-template="weekend"><span>04</span><b>Уикенд</b><small>4 города без перегруза</small></button>
+    </section>
+
+    <section id="cities" class="section-shell city-section">
+      <div class="section-head reveal">
+        <span class="section-kicker">города</span>
+        <h2>Каждый курорт — отдельный сценарий</h2>
+        <p>Кисловодск — природный воздух и терренкуры, Пятигорск — драматичная история и Машук, Ессентуки — питьевые галереи, Железноводск — лесной парк и каскады.</p>
+      </div>
+      <div class="city-layout">
+        <div class="city-tabs glass-panel reveal" role="tablist" aria-label="Города КМВ" id="cityTabs"></div>
+        <article class="city-detail glass-panel reveal delay-1" id="cityDetail" aria-live="polite"></article>
+      </div>
+    </section>
+
+    <section id="routes" class="section-shell routes-section">
+      <div class="section-head reveal">
+        <span class="section-kicker">готовые маршруты</span>
+        <h2>Не просто список мест — ритм поездки</h2>
+        <p>Маршруты сделаны так, чтобы день не превратился в гонку: утром природа, днём архитектура, вечером лёгкая прогулка и видовая точка.</p>
+      </div>
+      <div class="route-grid" id="routeGrid"></div>
+    </section>
+
+    <section id="map" class="section-shell map-section">
+      <div class="section-head reveal">
+        <span class="section-kicker">карта</span>
+        <h2>Схема региона с живыми точками</h2>
+        <p>Нажимай на город или место: справа появится короткая выжимка и кнопка открытия в картах.</p>
+      </div>
+      <div class="map-layout">
+        <div class="big-map glass-panel reveal" aria-label="Интерактивная схема Кавказских Минеральных Вод">
+          <svg viewBox="0 0 940 560" role="img" aria-labelledby="mapTitle mapDesc">
+            <title id="mapTitle">Схема Кавказских Минеральных Вод</title>
+            <desc id="mapDesc">Города-курорты соединены линией маршрута: Кисловодск, Ессентуки, Пятигорск, Железноводск, Минеральные Воды.</desc>
             <defs>
-              <linearGradient id="mapPath" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stop-color="#0EA5A3" />
-                <stop offset=".55" stop-color="#D97706" />
-                <stop offset="1" stop-color="#7C5C3E" />
-              </linearGradient>
+              <linearGradient id="kmvRoute" x1="118" y1="401" x2="777" y2="122" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb86b"/><stop offset=".45" stop-color="#1de4c7"/><stop offset="1" stop-color="#7da7ff"/></linearGradient>
+              <radialGradient id="nodeGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) scale(50)"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#20e8cb" stop-opacity="0"/></radialGradient>
             </defs>
-            <path class="terrain terrain-back" d="M25 215 C85 120 117 142 148 92 C174 51 220 84 245 48 C277 7 326 75 341 129 L360 270 L0 270 Z" />
-            <path class="terrain terrain-mid" d="M0 236 C44 166 82 178 112 137 C158 76 207 139 236 98 C266 55 307 110 360 71 L360 270 L0 270 Z" />
-            <path class="map-route" d="M56 199 C91 170 111 171 139 144 C168 116 192 120 215 102 C244 79 271 89 306 62" />
-            <g class="map-pin" transform="translate(56 199)"><circle r="14"/><text y="4">П</text></g>
-            <g class="map-pin" transform="translate(139 144)"><circle r="14"/><text y="4">Е</text></g>
-            <g class="map-pin" transform="translate(215 102)"><circle r="14"/><text y="4">Ж</text></g>
-            <g class="map-pin" transform="translate(306 62)"><circle r="14"/><text y="4">К</text></g>
+            <path class="map-terrain back" d="M28 512C96 386 133 258 232 283c102 25 104-158 210-135 98 21 124 197 191 168 91-40 129-154 278 195H28Z"/>
+            <path class="map-terrain mid" d="M45 515c74-108 130-144 184-125 68 24 86-101 166-81 83 21 125 129 211 82 72-39 147-46 272 124H45Z"/>
+            <path class="map-route" d="M126 416C210 378 240 319 328 310c83-8 105 40 169 18 65-22 82-102 132-113 59-13 86 54 146-40"/>
+            <g id="mapNodes"></g>
           </svg>
-          <div class="metric-grid">
-            <span><strong>4</strong> города</span>
-            <span><strong>12</strong> точек</span>
-            <span><strong>7</strong> готовых сценариев</span>
+        </div>
+        <aside class="map-info glass-panel reveal delay-1" id="mapInfo"></aside>
+      </div>
+    </section>
+
+    <section id="planner" class="section-shell planner-section">
+      <div class="section-head reveal">
+        <span class="section-kicker">планер</span>
+        <h2>Собери свой маршрут</h2>
+        <p>Фильтруй места по городу и настроению, добавляй в маршрут, а потом открывай каждую точку в навигации.</p>
+      </div>
+      <div class="planner-grid">
+        <div class="finder glass-panel reveal">
+          <label class="search-box" for="placeSearch">
+            <span>Поиск</span>
+            <input id="placeSearch" type="search" placeholder="Например: парк, источник, Машук" autocomplete="off" />
+          </label>
+          <div class="filter-row" id="filterRow" aria-label="Фильтры мест"></div>
+          <div class="place-list" id="placeList" aria-live="polite"></div>
+        </div>
+        <aside class="route-builder glass-panel reveal delay-1">
+          <div class="builder-head">
+            <div><span class="section-kicker">мой день</span><h3>Выбранный маршрут</h3></div>
+            <button class="mini-btn" type="button" id="clearRoute">Очистить</button>
           </div>
-        </div>
+          <ol class="selected-route" id="selectedRoute"></ol>
+          <div class="empty-route" id="emptyRoute">Добавь 2–5 точек — здесь появится аккуратный план с темпом прогулки.</div>
+          <div class="builder-actions">
+            <button class="btn btn-primary" type="button" id="copyRoute">Скопировать план</button>
+            <button class="btn btn-ghost" type="button" data-route-template="weekend">Авто-уикенд</button>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section class="quick-strip section-observe" aria-label="Быстрые действия">
-      <a href="#routes" class="quick-card">
-        <span class="quick-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v13a1 1 0 0 1-1.5.86L12 15.6l-6.5 3.76A1 1 0 0 1 4 18.5v-13Zm2.5-.5a.5.5 0 0 0-.5.5v11.27l5.5-3.18a1 1 0 0 1 1 0l5.5 3.18V5.5a.5.5 0 0 0-.5-.5h-11Z"/></svg></span>
-        <strong>Готовые дни</strong>
-        <small>от 3 часов до уикенда</small>
-      </a>
-      <a href="#water" class="quick-card">
-        <span class="quick-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12.8 2.4a1 1 0 0 0-1.6 0C8.8 5.7 6 10.4 6 14a6 6 0 0 0 12 0c0-3.6-2.8-8.3-5.2-11.6ZM12 18a4 4 0 0 1-4-4c0-2.1 1.5-5.2 4-8.9 2.5 3.7 4 6.8 4 8.9a4 4 0 0 1-4 4Z"/></svg></span>
-        <strong>Минеральные воды</strong>
-        <small>нарзан, №4, №17</small>
-      </a>
-      <a href="#tips" class="quick-card">
-        <span class="quick-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1.52.85L12 19.1l-4.48 2.75A1 1 0 0 1 6 21V3Zm2 1v15.21l3.48-2.14a1 1 0 0 1 1.04 0L16 19.2V4H8Z"/></svg></span>
-        <strong>Памятка</strong>
-        <small>как не устать за день</small>
-      </a>
-    </section>
-
-    <section id="cities" class="section shell section-observe" aria-labelledby="cities-title">
-      <div class="section-heading">
-        <span class="eyebrow">Города‑курорты</span>
-        <h2 id="cities-title">Выбирай город по настроению, а не по случайному списку.</h2>
-        <p>Каждый город в КМВ даёт разный тип дня: вода, архитектура, горы, парк или спокойная прогулка.</p>
-      </div>
-
-      <div class="city-tabs" role="tablist" aria-label="Выбор города" id="cityTabs"></div>
-      <article class="city-stage" id="cityStage" aria-live="polite"></article>
-    </section>
-
-    <section id="planner" class="section planner section-observe" aria-labelledby="planner-title">
-      <div class="shell planner-grid">
-        <div class="section-heading compact">
-          <span class="eyebrow">Умный подбор</span>
-          <h2 id="planner-title">Ответь одним нажатием — гид пересоберёт день.</h2>
-          <p>Фильтр не прячет полезное: он поднимает наверх маршрут, который лучше подходит под твой день.</p>
-        </div>
-
-        <div class="planner-card">
-          <div class="chip-row" id="moodChips" aria-label="Фильтр маршрутов"></div>
-          <div class="recommendation" id="recommendation" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="routes" class="section shell section-observe" aria-labelledby="routes-title">
-      <div class="section-heading spread">
+    <section class="section-shell guide-notes reveal">
+      <div class="note-card glass-panel">
+        <span class="note-icon" aria-hidden="true">i</span>
         <div>
-          <span class="eyebrow">Маршруты</span>
-          <h2 id="routes-title">Сценарии, которые можно реально пройти.</h2>
-          <p>В карточках есть время, ритм, точки остановок и быстрые ссылки на карты.</p>
+          <h2>Важная ремарка про воды</h2>
+          <p>Минеральные источники — лечебный ресурс. Для дегустации в бюветах обычно достаточно маленьких порций, а лечебный курс лучше согласовывать с врачом или санаторием.</p>
         </div>
-        <button class="button button-ghost small" type="button" id="showSaved">Избранное</button>
-      </div>
-      <div class="routes-grid" id="routesGrid"></div>
-    </section>
-
-    <section id="water" class="section water section-observe" aria-labelledby="water-title">
-      <div class="shell water-grid">
-        <div class="water-visual" aria-hidden="true">
-          <svg viewBox="0 0 420 420">
-            <defs>
-              <radialGradient id="dropGlow" cx="50%" cy="35%" r="65%">
-                <stop offset="0" stop-color="#FFFFFF" stop-opacity=".92" />
-                <stop offset=".48" stop-color="#7DD3FC" stop-opacity=".74" />
-                <stop offset="1" stop-color="#0EA5A3" stop-opacity=".9" />
-              </radialGradient>
-            </defs>
-            <path class="drop" d="M232 36c-9-13-29-13-38 0C142 111 84 207 84 280c0 71 56 118 129 118s129-47 129-118c0-73-58-169-110-244Z" />
-            <path class="drop-line" d="M151 286c15 33 48 52 88 46" />
-            <path class="drop-line" d="M137 250c7-44 33-86 73-138" />
-          </svg>
-        </div>
-        <div class="section-heading compact">
-          <span class="eyebrow">Вода — главный сюжет</span>
-          <h2 id="water-title">Не пей “ради галочки”: встрой источники в спокойный маршрут.</h2>
-          <p>Сайт разделяет питьевые галереи и прогулочные точки, чтобы день не превращался в бег по бюветам.</p>
-          <div class="water-list">
-            <div>
-              <strong>Кисловодск</strong>
-              <span>Нарзанная галерея и парк</span>
-            </div>
-            <div>
-              <strong>Ессентуки</strong>
-              <span>Галерея 5000 и источники №4 / №17</span>
-            </div>
-            <div>
-              <strong>Железноводск</strong>
-              <span>Славяновский и Смирновский источники</span>
-            </div>
-          </div>
-          <p class="note">Минеральную воду для лечения лучше принимать только по рекомендации врача. В гиде это подано как туристическая навигация, а не медицинское назначение.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="tips" class="section shell section-observe" aria-labelledby="tips-title">
-      <div class="section-heading">
-        <span class="eyebrow">Памятка путешественника</span>
-        <h2 id="tips-title">Маленькие решения, которые делают поездку легче.</h2>
       </div>
       <div class="tips-grid">
-        <article class="tip-card">
-          <span>01</span>
-          <h3>Не смешивай четыре города в один день без причины.</h3>
-          <p>Лучше один город глубоко и один короткий акцент рядом: так остаётся ощущение отдыха, а не марафона.</p>
-        </article>
-        <article class="tip-card">
-          <span>02</span>
-          <h3>Закладывай паузы после подъёмов.</h3>
-          <p>Машук, терренкуры и каскадные лестницы выглядят легко на карте, но требуют воды, обуви и времени.</p>
-        </article>
-        <article class="tip-card">
-          <span>03</span>
-          <h3>Открывай маршрут заранее.</h3>
-          <p>В карточках есть быстрые ссылки на карты. Проверь путь до старта, пока есть стабильный интернет.</p>
-        </article>
+        <article class="tip glass-panel"><b>Лучший старт дня</b><span>Парк или терренкур до жары, затем галерея и завтрак.</span></article>
+        <article class="tip glass-panel"><b>Для фото</b><span>Золотой час: Долина роз, Машук, Каскадная лестница.</span></article>
+        <article class="tip glass-panel"><b>Без машины</b><span>Строй маршрут вокруг вокзалов и центральных парков.</span></article>
       </div>
     </section>
   </main>
 
-  <nav class="bottom-nav" aria-label="Мобильная навигация">
-    <a href="#top" data-nav="top">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.4 11.3 4a1 1 0 0 1 1.4 0l7.3 7.4a1 1 0 0 1-1.4 1.4l-.6-.6V19a2 2 0 0 1-2 2h-2.5a1 1 0 0 1-1-1v-4h-1v4a1 1 0 0 1-1 1H8a2 2 0 0 1-2-2v-6.8l-.6.6A1 1 0 1 1 4 11.4Z"/></svg>
-      <span>Главная</span>
-    </a>
-    <a href="#cities" data-nav="cities">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 6.1 11.8 6.4 12.1a.8.8 0 0 0 1.2 0C12.9 20.8 19 14.2 19 9a7 7 0 0 0-7-7Zm0 9.7A2.7 2.7 0 1 1 12 6.3a2.7 2.7 0 0 1 0 5.4Z"/></svg>
-      <span>Города</span>
-    </a>
-    <a href="#routes" data-nav="routes">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3a1 1 0 0 1 .45.1L11 5.38l5.55-2.77A1 1 0 0 1 18 3.5v15a1 1 0 0 1-.55.9l-6 3a1 1 0 0 1-.9 0L6 20.12l-3.55 1.77A1 1 0 0 1 1 21V6a1 1 0 0 1 .55-.9l4-2A1 1 0 0 1 6 3Zm1 2.12v13.26l3 1.5V6.62l-3-1.5Zm5 1.5v13.26l4-2V4.62l-4 2Zm-9 .5v12.26l2-1V5.12l-2 1Z"/></svg>
-      <span>Маршруты</span>
-    </a>
-    <a href="#planner" data-nav="planner">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V5Zm3-1a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1H7Zm2 4a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2h-4a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2h-5a1 1 0 0 1-1-1Zm0 4a1 1 0 0 1 1-1h3a1 1 0 1 1 0 2h-3a1 1 0 0 1-1-1Z"/></svg>
-      <span>Подбор</span>
-    </a>
+  <nav class="bottom-nav" aria-label="Быстрая мобильная навигация" data-glass>
+    <a href="#cities"><span>Города</span></a>
+    <a href="#routes"><span>Маршруты</span></a>
+    <a href="#map"><span>Карта</span></a>
+    <a href="#planner"><span>План</span></a>
   </nav>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <dialog class="place-dialog" id="placeDialog" aria-labelledby="dialogTitle">
-    <button class="dialog-close" id="dialogClose" aria-label="Закрыть окно" type="button">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 5.3a1 1 0 0 1 1.4 0L12 9.6l4.3-4.3a1 1 0 1 1 1.4 1.4L13.4 11l4.3 4.3a1 1 0 0 1-1.4 1.4L12 12.4l-4.3 4.3a1 1 0 0 1-1.4-1.4l4.3-4.3-4.3-4.3a1 1 0 0 1 0-1.4Z"/></svg>
-    </button>
-    <div id="dialogContent"></div>
-  </dialog>
-
   <script src="app.js" defer></script>
 </body>
 </html>
