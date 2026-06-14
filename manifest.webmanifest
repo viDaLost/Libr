@@ -1,17 +1,12 @@
 {
-  "name": "Librarr Mobile Static",
-  "short_name": "Librarr",
+  "name": "КМВ Гид",
+  "short_name": "КМВ Гид",
+  "description": "Мобильный гид по Кавказским Минеральным Водам",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0b1120",
-  "theme_color": "#0b1120",
-  "description": "Mobile static build of Librarr with local browser storage.",
+  "background_color": "#F5F0E7",
+  "theme_color": "#0F766E",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "assets/icon.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
